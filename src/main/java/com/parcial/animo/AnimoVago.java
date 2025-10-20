@@ -1,4 +1,3 @@
-// src/main/java/com/parcial/animo/AnimoVago.java
 package com.parcial.animo;
 
 import com.parcial.model.Encargado;
@@ -8,6 +7,6 @@ public class AnimoVago implements Animo {
     @Override
     public void procesar(Excusa excusa, Encargado encargado) {
         System.out.println("El encargado " + encargado.getNombre() + " es vago y no procesa la excusa.");
-        encargado.getSucesor().manejarExcusa(excusa);
+        encargado.pasarAlSiguiente(excusa);
     }
 }

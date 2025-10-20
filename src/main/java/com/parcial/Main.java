@@ -1,5 +1,6 @@
 package com.parcial;
 
+import com.parcial.animo.Animo;
 import com.parcial.animo.AnimoNormal;
 import com.parcial.animo.AnimoProductivo;
 import com.parcial.animo.AnimoVago;
@@ -9,57 +10,75 @@ import com.parcial.excusas.ExcusaInverosimil;
 import com.parcial.excusas.ExcusaModerada;
 import com.parcial.excusas.ExcusaTrivial;
 import com.parcial.handler.CEO;
-import com.parcial.model.Encargado;
 import com.parcial.handler.GerenteRRHH;
 import com.parcial.handler.Recepcionista;
 import com.parcial.handler.Supervisor;
 import com.parcial.model.Empleado;
+import com.parcial.model.Encargado;
 import com.parcial.model.Excusa;
+import com.parcial.service.AdministradorDeProntuarios;
+import com.parcial.service.EmailSender;
+import com.parcial.service.EmailSenderImpl;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        // --- 1. Creación del Empleado y las Excusas ---
-        System.out.println("Preparando el entorno de prueba...");
-        Empleado empleadoTardio = new Empleado("Juan Perez", "juan.perez@mail.com", "JP-5544");
+        EmailSender sender = new EmailSenderImpl();
+        AdministradorDeProntuarios admin = AdministradorDeProntuarios.getInstancia();
 
-        Excusa excusaTrivial = new ExcusaTrivial(empleadoTardio, "Me quedé dormido, sonó tarde el despertador.");
-        Excusa excusaModerada = new ExcusaModerada(empleadoTardio, "Hubo un corte de luz general en todo el barrio.");
-        Excusa excusaCompleja = new ExcusaCompleja(empleadoTardio, "Una paloma mensajera robó las llaves de mi auto.");
-        Excusa excusaInverosimil = new ExcusaInverosimil(empleadoTardio, "Fui abducido brevemente por una nave espacial.");
-        
-        // --- 2. Creación de los Encargados con Ánimos Variados ---
-        Recepcionista recepcionista = new Recepcionista("Ana", "ana@excusas.sa", "123", new AnimoNormal());
-        Supervisor supervisor = new Supervisor("Bruno", "bruno@excusas.sa", "456", new AnimoProductivo());
-        GerenteRRHH gerente = new GerenteRRHH("Carla", "carla@excusas.sa", "789", new AnimoVago());
-        CEO ceo = new CEO("Diana", "diana@excusas.sa", "001", new AnimoNormal());
+        Animo normal = new AnimoNormal();
+        Animo vago = new AnimoVago();
+        Animo productivo = new AnimoProductivo();
 
-        // --- 3. Construcción de la Cadena de Mando ---
-        CadenaDeMandoBuilder builder = new CadenaDeMandoBuilder();
+        Empleado empleado = new Empleado("Juan Perez", "juan.perez@mail.com", "JP-5544");
 
+        Excusa excusaTrivial = new ExcusaTrivial(empleado, "Me quedé dormido.");
+        Excusa excusaModerada = new ExcusaModerada(empleado, "Corte de luz en el barrio.");
+        Excusa excusaCompleja = new ExcusaCompleja(empleado, "Una paloma robó las llaves de mi auto.");
+        Excusa excusaInverosimil = new ExcusaInverosimil(empleado, "Fui abducido por aliens.");
+
+        Recepcionista recepcionista = new Recepcionista("Ana (Recepcionista)", "ana@excusas.sa", "123", normal, sender);
+        Supervisor supervisor = new Supervisor("Bruno (Supervisor)", "bruno@excusas.sa", "456", productivo, sender);
+        GerenteRRHH gerente = new GerenteRRHH("Carla (Gerente)", "carla@excusas.sa", "789", vago, sender);
+        CEO ceoDiana = new CEO("Diana (CEO)", "diana@excusas.sa", "001", normal, sender);
+        CEO ceoDavid = new CEO("David (CEO Observador)", "david@excusas.sa", "002", normal, sender);
+
+        admin.agregarObservador(ceoDiana);
+        admin.agregarObservador(ceoDavid);
+
+        CadenaDeMandoBuilder builder = new CadenaDeMandoBuilder(sender);
         Encargado cadenaDeMando = builder
-            .agregar(recepcionista)
-            .agregar(supervisor)
-            .agregar(gerente)
-            .agregar(ceo)
-            .construir();
-        
-        System.out.println("Cadena de mando construida. Iniciando prueba...");
-        System.out.println("==============================================");
+                .agregar(recepcionista)
+                .agregar(supervisor)
+                .agregar(gerente)
+                .agregar(ceoDiana)
+                .construir();
 
+        
+        System.out.println("--- INICIO DE PRUEBAS ---");
 
-        // --- 4. EJECUCIÓN DE LA PRUEBA ---
-        //
-        //       ↓↓↓ CAMBIA ESTA VARIABLE PARA PROBAR OTRA EXCUSA ↓↓↓
-        Excusa excusaActual = excusaCompleja;
-        //
-        System.out.println("Procesando excusa: \"" + excusaActual.getDescripcion() + "\"");
-        System.out.println("----------------------------------------------");
-        
-        cadenaDeMando.manejarExcusa(excusaActual);
-        
+        System.out.println("\n==============================================");
+        System.out.println("CASO 1: EXCUSA TRIVIAL (Manejada por Recepcionista)");
         System.out.println("==============================================");
-        System.out.println("Prueba finalizada.");
+        cadenaDeMando.manejarExcusa(excusaTrivial);
+
+        System.out.println("\n==============================================");
+        System.out.println("CASO 2: EXCUSA MODERADA (Manejada por Supervisor Productivo)");
+        System.out.println("==============================================");
+        cadenaDeMando.manejarExcusa(excusaModerada);
+
+        System.out.println("\n==============================================");
+        System.out.println("CASO 3: EXCUSA COMPLEJA (Pasa por Supervisor Productivo y Gerente Vago)");
+        System.out.println("==============================================");
+        cadenaDeMando.manejarExcusa(excusaCompleja);
+
+        System.out.println("\n==============================================");
+        System.out.println("CASO 4: EXCUSA INVEROSIMIL (Prueba CEO y Observer)");
+        System.out.println("==============================================");
+        cadenaDeMando.manejarExcusa(excusaInverosimil);
+
+        
+        System.out.println("\n--- FIN DE PRUEBAS ---");
     }
 }

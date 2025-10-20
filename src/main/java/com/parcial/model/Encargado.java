@@ -1,46 +1,51 @@
-// src/main/java/com/parcial/handler/Encargado.java
 package com.parcial.model;
 
 import com.parcial.animo.Animo;
+import com.parcial.service.EmailSender;
 
-abstract public class Encargado {
-    private Encargado suceror;
-    private String nombre;
-    private String email;
-    private String numeroLegajo;
-    private Animo animo;
+public abstract class Encargado {
+    protected Encargado sucesor;
+    protected String nombre;
+    protected String email;
+    protected String numeroLegajo;
+    protected Animo animo;
+    protected EmailSender emailSender;
 
-    public Encargado(String nombre, String email, String numeroLegajo, Animo animo) {
+    public Encargado(String nombre, String email, String numeroLegajo, Animo animo, EmailSender emailSender) {
         this.nombre = nombre;
         this.email = email;
         this.numeroLegajo = numeroLegajo;
         this.animo = animo;
+        this.emailSender = emailSender;
     }
 
     public void manejarExcusa(Excusa excusa) {
-        if (this.puedeManejar(excusa)) {
-            this.manejar(excusa);
-        } else {
-            this.suceror.manejarExcusa(excusa);
-        }
+        animo.procesar(excusa, this);
     }
+
+    public abstract boolean puedeManejar(Excusa excusa);
+
+    public abstract void procesarSolicitud(Excusa excusa);
 
     public void setSucesor(Encargado sucesor) {
-        this.suceror = sucesor;
+        this.sucesor = sucesor;
     }
 
-    public Encargado getSucesor() {
-        return suceror;
+    public void pasarAlSiguiente(Excusa excusa) {
+        if (this.sucesor != null) {
+            this.sucesor.manejarExcusa(excusa);
+        }
     }
 
     public String getNombre() {
         return nombre;
     }
 
-    protected abstract boolean puedeManejar(Excusa excusa);
+    public String getEmail() {
+        return email;
+    }
 
-    public void manejar(Excusa excusa) {
-        System.out.println("Encargado: " + this.nombre + " maneja la excusa.");
-        animo.procesar(excusa, this);
+    public EmailSender getEmailSender() {
+        return emailSender;
     }
 }

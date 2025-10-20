@@ -10,4 +10,8 @@ public class Prontuario {
         this.excusa = excusa;
         this.numeroLegajo = empleado.getNumeroLegajo();
     }
+
+    public Empleado getEmpleado() {
+        return empleado;
+    }
 }

@@ -12,6 +12,10 @@ public class Excusa {
     public String getDescripcion() {
         return descripcion;
     }
+
+    public Empleado getEmpleado() {
+        return empleado;
+    }
     
     //TIPOS DE EXCUSAS
     public boolean esTrivial() {
