@@ -25,11 +25,11 @@ public class ChainTest {
         mockSender = new MockEmailSender();
         empleado = new Empleado("Juan Perez", "juan.perez@mail.com", "JP-5544");
         
-        // Creamos una cadena simple solo con Recepcionista y Supervisor
+    
         cadenaDeMando = new CadenaDeMandoBuilder(mockSender)
                 .agregar(new Recepcionista("Ana", "ana@excusas.sa", "123", new AnimoNormal(), mockSender))
                 .agregar(new Supervisor("Bruno", "bruno@excusas.sa", "456", new AnimoNormal(), mockSender))
-                .construir(); // El builder añade el EncargadoFinal
+                .construir(); 
     }
 
     @Test

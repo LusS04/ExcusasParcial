@@ -13,7 +13,6 @@ public class MockEmailSender implements EmailSender {
         emailsEnviados.add(new Email(unEmailDestino, unEmailOrigen, unAsunto, unCuerpo));
     }
 
-    // --- Métodos de Test ---
     public int getTotalEmailsEnviados() {
         return emailsEnviados.size();
     }
@@ -33,7 +32,6 @@ public class MockEmailSender implements EmailSender {
         emailsEnviados.clear();
     }
 
-    // Clase interna para guardar los datos
     public static class Email {
         public String destino, origen, asunto, cuerpo;
         public Email(String d, String o, String a, String c) {

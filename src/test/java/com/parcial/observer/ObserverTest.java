@@ -16,8 +16,8 @@ public class ObserverTest {
 
     private MockEmailSender mockSenderDiana;
     private MockEmailSender mockSenderDavid;
-    private CEO ceoDiana; // Estará en la cadena
-    private CEO ceoDavid; // Solo será observador
+    private CEO ceoDiana; 
+    private CEO ceoDavid; 
     private AdministradorDeProntuarios admin;
     private Empleado empleado;
     private ExcusaInverosimil excusa;
@@ -33,8 +33,7 @@ public class ObserverTest {
         ceoDavid = new CEO("David", "david@excusas.sa", "002", new AnimoNormal(), mockSenderDavid);
 
         admin = AdministradorDeProntuarios.getInstancia();
-        // Limpiamos observadores de tests anteriores (aunque el singleton es difícil de limpiar)
-        // Idealmente, el admin tendría un método .clearObservadores() para tests.
+     
         
         admin.agregarObservador(ceoDiana);
         admin.agregarObservador(ceoDavid);
@@ -43,18 +42,13 @@ public class ObserverTest {
     @Test
     @DisplayName("CEO procesa excusa, crea prontuario y notifica a TODOS los CEOs")
     void testCEOProcesaYNotificaObservadores() {
-        // El CEO procesa la excusa (no necesita la cadena, él es el handler)
         ceoDiana.manejarExcusa(excusa);
 
-        // --- Verificamos a ceoDiana (la que procesó) ---
-        // 1. Verificamos que envió el email de "Aprobado por creatividad" al empleado
         assertTrue(mockSenderDiana.seEnvioEmailA("juan.perez@mail.com"));
-        // 2. Verificamos que se auto-notificó como observadora
+        
         assertTrue(mockSenderDiana.seEnvioEmailA("diana@excusas.sa"));
         assertEquals(2, mockSenderDiana.getTotalEmailsEnviados());
         
-        // --- Verificamos a ceoDavid (el que solo observaba) ---
-        // 1. Verificamos que recibió la notificación
         assertEquals(1, mockSenderDavid.getTotalEmailsEnviados());
         assertEquals("david@excusas.sa", mockSenderDavid.getUltimoEmailEnviado().destino);
         assertEquals("Notificación: Nuevo Prontuario Registrado", mockSenderDavid.getUltimoEmailEnviado().asunto);
